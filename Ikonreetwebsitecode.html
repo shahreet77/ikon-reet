@@ -171,3 +171,47 @@
     </div>
 </body>
 </html>
+<!-- Add Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+<script>
+    // 🔹 Replace this with your Firebase project config
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Function to load content from Firestore
+    function loadContent(pageId) {
+        const contentElement = document.getElementById(pageId + '-content');
+        db.collection("pages").doc(pageId).get().then((doc) => {
+            if (doc.exists) {
+                contentElement.innerHTML = doc.data().content;
+            }
+        });
+    }
+
+    // Save changes automatically
+    document.querySelectorAll('.editable').forEach(element => {
+        element.addEventListener('input', function () {
+            const pageId = this.id.replace('-content', '');
+            db.collection("pages").doc(pageId).set({
+                content: this.innerHTML
+            });
+        });
+    });
+
+    // Load the home page on start
+    window.onload = function() {
+        loadContent('home');
+    };
+</script>
